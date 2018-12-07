@@ -19,7 +19,8 @@ int main(int argc, char **argv) {
             return result < 0 ? errno : 0;
         }
 
-        default:break;
+        default:
+            break;
     }
 
 }
@@ -33,6 +34,6 @@ int check_arguments(int argc, char **argv) {
             printf("missing destination file operand after '%s'\n", argv[1]);
             return -2;
         default:
-            break;
+            return 0;
     }
 }
