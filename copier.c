@@ -57,7 +57,7 @@ int copy_file_data(int source, int destination) {
     char data[READ_BYTE_SIZE];
     ssize_t read_bytes = 0;
     while ((read_bytes = read(source, data, READ_BYTE_SIZE)) > 0) {
-        ssize_t write_bytes = write(destination, data, read_bytes);
+        ssize_t write_bytes = write(destination, data, (size_t) read_bytes);
         if (write_bytes < 0) {
             return -1;
         }
@@ -67,10 +67,12 @@ int copy_file_data(int source, int destination) {
 
 int open_destination_file(char *source, char *destination, __mode_t file_mode) {
     errno = 0;
-    int result = open(destination, O_WRONLY | O_CREAT, file_mode);
+    char destination_copy[strlen(destination)];
+    strcpy(destination_copy, destination);
+    int result = open(destination_copy, O_WRONLY | O_CREAT, file_mode);
 
     if (errno == EISDIR) {
-        result = open(strcat(strcat(destination, "/"), source), O_WRONLY | O_CREAT, file_mode);
+        result = open(strcat(strcat(destination_copy, "/"), source), O_WRONLY | O_CREAT, file_mode);
     }
 
     return result;

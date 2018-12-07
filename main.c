@@ -5,6 +5,8 @@
 
 int check_arguments(int argc, char **argv);
 
+int copy_all_files_to_dir(int argc, char **argv);
+
 int main(int argc, char **argv) {
     errno = 0;
 
@@ -13,16 +15,19 @@ int main(int argc, char **argv) {
         return check_result;
     }
 
-    switch (argc) {
-        case 3: {
-            int result = copy_file_to_file(argv[1], argv[2]);
-            return result < 0 ? errno : 0;
+    int result = copy_all_files_to_dir(argc, argv);
+    return result < 0 ? errno : 0;
+}
+
+int copy_all_files_to_dir(int argc, char **argv) {
+    char *destination_dir = argv[argc - 1];
+    for (int i = 1; i < argc - 1; ++i) {
+        int result = copy_file_to_file(argv[i], destination_dir);
+        if (result < 0) {
+            return errno;
         }
-
-        default:
-            break;
     }
-
+    return 0;
 }
 
 int check_arguments(int argc, char **argv) {
