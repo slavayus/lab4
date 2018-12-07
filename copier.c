@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <libgen.h>
 
 #define READ_BYTE_SIZE 128
 
@@ -66,13 +67,15 @@ int copy_file_data(int source, int destination) {
 }
 
 int open_destination_file(char *source, char *destination, __mode_t file_mode) {
+    char *source_file_name = basename(source);
+
     errno = 0;
     char destination_copy[strlen(destination)];
     strcpy(destination_copy, destination);
     int result = open(destination_copy, O_WRONLY | O_CREAT, file_mode);
 
     if (errno == EISDIR) {
-        result = open(strcat(strcat(destination_copy, "/"), source), O_WRONLY | O_CREAT, file_mode);
+        result = open(strcat(strcat(destination_copy, "/"), source_file_name), O_WRONLY | O_CREAT, file_mode);
     }
 
     return result;
