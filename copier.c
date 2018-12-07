@@ -6,14 +6,14 @@
 
 #define READ_BYTE_SIZE 128
 
-int open_source_file();
+int open_source_file(char *string);
 
-int open_destination_file(__mode_t file_mode);
+int open_destination_file(char *file_mode, __mode_t i);
 
 int copy_file_data(int source, int destination);
 
-int copy_file_to_file(){
-    int file_descriptor_source = open_source_file();
+int copy_file_to_file(char *source, char *destination) {
+    int file_descriptor_source = open_source_file(source);
 
     if (file_descriptor_source < 0) {
         perror("source");
@@ -21,12 +21,12 @@ int copy_file_to_file(){
     }
 
     struct stat file_stat;
-    if (stat("1", &file_stat) < 0) {
+    if (stat(source, &file_stat) < 0) {
         perror("mode");
         return errno;
     }
 
-    int file_descriptor_destination = open_destination_file(file_stat.st_mode);
+    int file_descriptor_destination = open_destination_file(destination, file_stat.st_mode);
 
     if (file_descriptor_destination < 0) {
         perror("destination");
@@ -64,10 +64,10 @@ int copy_file_data(int source, int destination) {
     return read_bytes < 0 ? -1 : 0;
 }
 
-int open_destination_file(__mode_t file_mode) {
-    return open("2", O_WRONLY | O_CREAT, file_mode);
+int open_destination_file(char *file_name, __mode_t file_mode) {
+    return open(file_name, O_WRONLY | O_CREAT, file_mode);
 }
 
-int open_source_file() {
-    return open("1", O_RDONLY);
+int open_source_file(char *file_name) {
+    return open(file_name, O_RDONLY);
 }

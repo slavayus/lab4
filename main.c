@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
 
     switch (argc) {
         case 3: {
-            int result = copy_file_to_file();
+            int result = copy_file_to_file(argv[1], argv[2]);
             return result < 0 ? errno : 0;
         }
 
