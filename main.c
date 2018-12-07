@@ -1,10 +1,15 @@
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <unistd.h>
+
+#define READ_BYTE_SIZE 128
 
 int open_source_file();
 
 int open_destination_file();
+
+int copy_file_data(int source, int destination);
 
 int main() {
     errno = 0;
@@ -23,14 +28,31 @@ int main() {
         return errno;
     }
 
-    printf("file no=%i\n", file_descriptor_source);
-    printf("file no=%i\n", file_descriptor_destination);
+    if (copy_file_data(file_descriptor_source, file_descriptor_destination) < 0) {
+        perror("copy");
+        return errno;
+    }
+
+    close(file_descriptor_source);
+    close(file_descriptor_destination);
 
     return 0;
 }
 
+int copy_file_data(int source, int destination) {
+    char data[READ_BYTE_SIZE];
+    ssize_t read_bytes = 0;
+    while ((read_bytes = read(source, data, READ_BYTE_SIZE)) > 0) {
+        ssize_t write_bytes = write(destination, data, read_bytes);
+        if (write_bytes < 0) {
+            return -1;
+        }
+    }
+    return read_bytes < 0 ? -1 : 0;
+}
+
 int open_destination_file() {
-    return open("2", O_WRONLY | O_CREAT, S_IWUSR);
+    return open("2", O_WRONLY | O_CREAT, S_IWUSR | S_IRUSR);
 }
 
 int open_source_file() {
