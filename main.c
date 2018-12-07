@@ -33,10 +33,17 @@ int main() {
         return errno;
     }
 
-    close(file_descriptor_source);
-    close(file_descriptor_destination);
+    int exit = 0;
+    if (close(file_descriptor_source) < 0) {
+        perror("close source");
+        exit = 1;
+    }
+    if (close(file_descriptor_destination) < 0) {
+        perror("close destination");
+        return errno;
+    }
 
-    return 0;
+    return exit == 1 ? errno : 0;
 }
 
 int copy_file_data(int source, int destination) {
