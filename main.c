@@ -1,67 +1,38 @@
 #include <stdio.h>
 #include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include "copier.h"
 
-#define READ_BYTE_SIZE 128
 
-int open_source_file();
+int check_arguments(int argc, char **argv);
 
-int open_destination_file();
-
-int copy_file_data(int source, int destination);
-
-int main() {
+int main(int argc, char **argv) {
     errno = 0;
 
-    int file_descriptor_source = open_source_file();
-
-    if (file_descriptor_source < 0) {
-        perror("source");
-        return errno;
+    int check_result = check_arguments(argc, argv);
+    if (check_result < 0) {
+        return check_result;
     }
 
-    int file_descriptor_destination = open_destination_file();
-
-    if (file_descriptor_destination < 0) {
-        perror("destination");
-        return errno;
-    }
-
-    if (copy_file_data(file_descriptor_source, file_descriptor_destination) < 0) {
-        perror("copy");
-        return errno;
-    }
-
-    int exit = 0;
-    if (close(file_descriptor_source) < 0) {
-        perror("close source");
-        exit = 1;
-    }
-    if (close(file_descriptor_destination) < 0) {
-        perror("close destination");
-        return errno;
-    }
-
-    return exit == 1 ? errno : 0;
-}
-
-int copy_file_data(int source, int destination) {
-    char data[READ_BYTE_SIZE];
-    ssize_t read_bytes = 0;
-    while ((read_bytes = read(source, data, READ_BYTE_SIZE)) > 0) {
-        ssize_t write_bytes = write(destination, data, read_bytes);
-        if (write_bytes < 0) {
-            return -1;
+    switch (argc) {
+        case 3: {
+            int result = copy_file_to_file();
+            return result < 0 ? errno : 0;
         }
+
+        default:break;
     }
-    return read_bytes < 0 ? -1 : 0;
+
 }
 
-int open_destination_file() {
-    return open("2", O_WRONLY | O_CREAT, S_IWUSR | S_IRUSR);
-}
-
-int open_source_file() {
-    return open("1", O_RDONLY);
+int check_arguments(int argc, char **argv) {
+    switch (argc) {
+        case 1:
+            printf("missing file operand\n");
+            return -1;
+        case 2:
+            printf("missing destination file operand after '%s'\n", argv[1]);
+            return -2;
+        default:
+            break;
+    }
 }
