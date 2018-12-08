@@ -1,4 +1,4 @@
-#!/usr/bin/perl -T
+#!/usr/bin/perl
 use strict;
 use warnings;
 use Fcntl;
@@ -11,10 +11,12 @@ if ($result) {
     exit($result)
 }
 
-my $source_file = open_source_file();
+my $source_file = open_source_file($ARGV[0]);
 my $filemode = (stat($source_file))[2];
-my $destination_file = open_destination_file($filemode);
+my $destination_file = open_destination_file($ARGV[1], $filemode);
 copy_file_data($source_file, $destination_file);
+close($source_file);
+close($destination_file);
 
 sub check_args {
     if ($#ARGV == -1) {
@@ -42,13 +44,13 @@ sub copy_file_data {
 }
 
 sub open_source_file {
-    sysopen(my $fh, "1", O_RDONLY)
+    sysopen(my $fh, $_[0], O_RDONLY)
         or die "Can't open < source file: $!";
     return $fh
 }
 
 sub open_destination_file {
-    sysopen(my $fh, "2", O_WRONLY | O_CREAT, $_[0])
+    sysopen(my $fh, $_[0], O_WRONLY | O_CREAT, $_[1])
         or die "Can't open > destination file: $!";
     return $fh
 }
