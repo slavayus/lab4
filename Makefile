@@ -11,4 +11,4 @@ main.o:main.c
 copier.o:copier.c
 	gcc -c -Wall -Wextra --std=gnu99 -pedantic -Werror -o copier.o copier.c
 clean:
-	rm -f $(PROGRAM_OBJ) $(PROGRAM_OUT)
+	rm -f $(PROGRAM_OBJ)
