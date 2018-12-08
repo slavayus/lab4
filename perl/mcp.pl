@@ -11,12 +11,17 @@ if ($result) {
     exit($result)
 }
 
-my $source_file = open_source_file($ARGV[0]);
-my $filemode = (stat($source_file))[2];
-my $destination_file = open_destination_file($ARGV[1], $filemode);
-copy_file_data($source_file, $destination_file);
-close($source_file);
-close($destination_file);
+copy_file_to_file($ARGV[0], $ARGV[1]);
+
+sub copy_file_to_file(){
+    my $source_file = open_source_file($_[0]);
+    my $filemode = (stat($source_file))[2];
+    my $destination_file = open_destination_file($_[1], $filemode);
+    copy_file_data($source_file, $destination_file);
+    close($source_file);
+    close($destination_file);
+}
+
 
 sub check_args {
     if ($#ARGV == -1) {
