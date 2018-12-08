@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use Fcntl;
 
+sub copy_all_files_to_dir();
+
 my $buffer_size = 3;
 
 my $result = check_args();
@@ -11,9 +13,22 @@ if ($result) {
     exit($result)
 }
 
-copy_file_to_file($ARGV[0], $ARGV[1]);
+$result = copy_all_files_to_dir();
+!$result or die "Something went wrong";
 
-sub copy_file_to_file(){
+
+sub copy_all_files_to_dir() {
+    my $destination_dir = $ARGV[$#ARGV];
+    for (my $i = 0; $i < $#ARGV; ++$i) {
+        my $cp_result = copy_file_to_file($ARGV[$i], $destination_dir);
+        if ($cp_result < 0) {
+            return 3;
+        }
+    }
+    return 0;
+}
+
+sub copy_file_to_file() {
     my $source_file = open_source_file($_[0]);
     my $filemode = (stat($source_file))[2];
     my $destination_file = open_destination_file($_[1], $filemode);
