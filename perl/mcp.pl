@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 use Fcntl;
+use File::Basename;
 
 sub copy_all_files_to_dir();
 
@@ -31,7 +32,7 @@ sub copy_all_files_to_dir() {
 sub copy_file_to_file() {
     my $source_file = open_source_file($_[0]);
     my $filemode = (stat($source_file))[2];
-    my $destination_file = open_destination_file($_[1], $filemode);
+    my $destination_file = open_destination_file($_[0], $_[1], $filemode);
     copy_file_data($source_file, $destination_file);
     close($source_file);
     close($destination_file);
@@ -70,7 +71,13 @@ sub open_source_file {
 }
 
 sub open_destination_file {
-    sysopen(my $fh, $_[0], O_WRONLY | O_CREAT, $_[1])
-        or die "Can't open > destination file: $!";
+    my $fh;
+    my $open_res = sysopen($fh, $_[1], O_WRONLY | O_CREAT, $_[2]);
+    if (!defined $open_res) {
+        $open_res = sysopen($fh, $_[1] . "/" . basename($_[0]), O_WRONLY | O_CREAT, $_[2]);
+        if (!defined $open_res) {
+            die "Can't open > destination file: $!";
+        }
+    }
     return $fh
 }
