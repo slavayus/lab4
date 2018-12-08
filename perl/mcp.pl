@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -T
 use strict;
 use warnings;
 use Fcntl;
@@ -101,13 +101,25 @@ sub open_source_file {
 }
 
 sub open_destination_file {
-    sysopen(my $fh, $_[0], O_WRONLY | O_CREAT, $_[1])
+    my $file = $_[0];
+    unless ($file =~ /^(.*)$/) {
+        die "filename '$file' has invalid characters.\n";
+    }
+    $file = $1;
+
+    sysopen(my $fh, $file, O_WRONLY | O_CREAT, $_[1])
         or die "Can't open > destination file: $!";
     return $fh
 }
 
 sub open_destination_dir {
-    sysopen(my $fh, $_[1] . "/" . basename($_[0]), O_WRONLY | O_CREAT, $_[2])
+    my $dir = $_[1] . "/" . basename($_[0]);
+    unless ($dir =~ /^(.*)$/) {
+        die "dirname '$dir' has invalid characters.\n";
+    }
+    $dir = $1;
+
+    sysopen(my $fh, $dir, O_WRONLY | O_CREAT, $_[2])
         or die "Can't open > destination dir: $!";
     return $fh
 }
