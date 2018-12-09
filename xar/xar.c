@@ -4,13 +4,9 @@
 #include <unistd.h>
 
 int main(int argc, char **argv) {
-    char *cmd = malloc(strlen(argv[1]));
-    strcat(cmd, argv[1]);
-
     char *arg[argc];
     for (int i = 1; i < argc; ++i) {
-        arg[i - 1] = malloc(strlen(argv[i]));
-        strcpy(arg[i - 1], argv[i]);
+        arg[i - 1] = argv[i];
     }
 
     char data[BUFSIZ];
@@ -31,9 +27,8 @@ int main(int argc, char **argv) {
 
     cmd_args[strlen(cmd_args) - 1] = '\0';
 
-    arg[argc - 1] = malloc(strlen(cmd_args));
-    strcpy(arg[argc - 1], cmd_args);
+    arg[argc - 1] = cmd_args;
     arg[argc] = NULL;
 
-    execvp(cmd, arg);
+    execvp(argv[1], arg);
 }
