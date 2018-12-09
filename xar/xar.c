@@ -1,23 +1,23 @@
 #include <stdio.h>
+#include <malloc.h>
 #include <string.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 int main(int argc, char **argv) {
-    char *cmd = malloc(sizeof(char *));
+    char *cmd = malloc(strlen(argv[1]));
+    strcat(cmd, argv[1]);
 
-    for (int i = 1; i < argc - 1; ++i) {
-        strcat(cmd, argv[i]);
-        strcat(cmd, " ");
+    char *arg[argc];
+    for (int i = 1; i < argc; ++i) {
+        arg[i - 1] = malloc(strlen(argv[i]));
+        strcpy(arg[i - 1], argv[i]);
     }
-    strcat(cmd, argv[argc - 1]);
 
     char data[BUFSIZ];
     ssize_t read_bytes = 0;
     size_t cmd_size = BUFSIZ;
     char *cmd_args = malloc(cmd_size);
-    while ((read_bytes = read(STDIN_FILENO, data, BUFSIZ - 1)) > 0) {
-        strcat(data, "\0");
+    while ((read_bytes = read(STDIN_FILENO, data, BUFSIZ)) > 0) {
         if (cmd_size > strlen(cmd_args) + strlen(data)) {
             strcat(cmd_args, data);
         } else {
@@ -29,5 +29,11 @@ int main(int argc, char **argv) {
         }
     }
 
-    execlp(cmd, cmd, cmd_args, NULL);
+    cmd_args[strlen(cmd_args) - 1] = '\0';
+
+    arg[argc - 1] = malloc(strlen(cmd_args));
+    strcpy(arg[argc - 1], cmd_args);
+    arg[argc] = NULL;
+
+    execvp(cmd, arg);
 }
