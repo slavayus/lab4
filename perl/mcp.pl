@@ -18,7 +18,7 @@ copy_files();
 
 sub copy_files() {
     if ($#ARGV == 1) {
-        if (-d $ARGV[1]) {
+        if (-d $ARGV[1] || -d $ARGV[0]) {
             $result = copy_file_to_dir($ARGV[0], $ARGV[1])
         }
         else {
