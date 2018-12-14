@@ -10,7 +10,7 @@
 
 int open_source_file(char *file_name);
 
-int open_destination_file(char *destination, __mode_t file_mode);
+int open_destination_file(char *destination, mode_t file_mode);
 
 int copy_file_data(int source, int destination);
 
@@ -56,7 +56,7 @@ int copy_file_to_file(char *source, char *destination) {
 
 int isDirectory(const char *path);
 
-int open_destination_dir(char *source, char *destination, __mode_t file_mode);
+int open_destination_dir(char *source, char *destination, mode_t file_mode);
 
 int copy_file_to_dir(char *source, char *destination) {
     if (isDirectory(source)) {
@@ -116,11 +116,11 @@ int copy_file_data(int source, int destination) {
     return read_bytes < 0 ? -1 : 0;
 }
 
-int open_destination_file(char *destination, __mode_t file_mode) {
+int open_destination_file(char *destination, mode_t file_mode) {
     return open(destination, O_WRONLY | O_CREAT, file_mode);
 }
 
-int open_destination_dir(char *source, char *destination, __mode_t file_mode) {
+int open_destination_dir(char *source, char *destination, mode_t file_mode) {
     char *source_file_name = basename(source);
     errno = 0;
     char destination_copy[strlen(destination)];
